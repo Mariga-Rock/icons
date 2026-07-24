@@ -17,7 +17,7 @@ Lite Comsol Multiphysics–inspired line-art UI icons (24×24, 2px).
 - **Special line** — soft curve + circular nodes
 - **Add element** — matching continuation segment in accent (same visual language)
 - **Add layer** — 3-bar layer stack accent
-- **Paste** — light open clipboard + sparse inner path
+- **Paste** — quiet clipboard frame; prominent accent path (angular+grips vs curve+nodes)
 
 ## Icons (10)
 

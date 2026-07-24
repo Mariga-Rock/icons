@@ -139,18 +139,28 @@ const icons = {
   'pipeline-paste': {
     label: 'Paste a pipeline from clipboard',
     draw: ({ primary, accent }) => `
-  <!-- open clipboard: sides + top only, no bottom -->
-  <path d="M7 19.5 V8 H17 V19.5" ${s(primary)} ${none}/>
-  <path d="M9.5 8 V5.5 H14.5 V8" ${s(primary)} ${none}/>
-  <path d="M9.5 14.5 L12 11 L13.5 12.5 L15.5 10" ${s(accent)} ${none}/>`,
+  <rect x="5" y="6" width="14" height="15" rx="1.25" ${s(primary)} ${none}/>
+  <path d="M9.5 6 V4.5 H14.5 V6" ${s(primary)} ${none}/>
+  <!-- sharp angular pipeline — square grips -->
+  <path d="M7.5 18 L7.5 12 L12 12 L12 9 L17 9 L17 7.5" ${s(accent)} ${none}/>
+  ${grip(7.5, 18, accent, 2.75)}
+  ${grip(7.5, 12, accent, 2.75)}
+  ${grip(12, 12, accent, 2.75)}
+  ${grip(12, 9, accent, 2.75)}
+  ${grip(17, 9, accent, 2.75)}
+  ${grip(17, 7.5, accent, 2.75)}`,
   },
 
   'special-line-paste': {
     label: 'Paste a special line from clipboard',
     draw: ({ primary, accent }) => `
-  <path d="M7 19.5 V8 H17 V19.5" ${s(primary)} ${none}/>
-  <path d="M9.5 8 V5.5 H14.5 V8" ${s(primary)} ${none}/>
-  <path d="M9.5 14.5 C11 14.5 11.5 11 13 11 C14.5 11 14.5 13.5 15.5 10.5" ${s(accent)} ${none}/>`,
+  <rect x="5" y="6" width="14" height="15" rx="1.25" ${s(primary)} ${none}/>
+  <path d="M9.5 6 V4.5 H14.5 V6" ${s(primary)} ${none}/>
+  <!-- smooth S-curve — circular nodes only -->
+  <path d="M7.5 17.5 C7.5 12 11 17 12 12 C13 7 16.5 12 16.5 7.5" ${s(accent)} ${none}/>
+  ${node(7.5, 17.5, accent, 1.9)}
+  ${node(12, 12, accent, 1.9)}
+  ${node(16.5, 7.5, accent, 1.9)}`,
   },
 };
 
@@ -261,7 +271,7 @@ Lite Comsol Multiphysics–inspired line-art UI icons (24×24, 2px).
 - **Special line** — soft curve + circular nodes
 - **Add element** — matching continuation segment in accent (same visual language)
 - **Add layer** — 3-bar layer stack accent
-- **Paste** — light open clipboard + sparse inner path
+- **Paste** — quiet clipboard frame; prominent accent path (angular+grips vs curve+nodes)
 
 ## Icons (10)
 
