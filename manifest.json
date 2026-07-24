@@ -4,8 +4,9 @@
     "secondary": "#B656FF",
     "darkDefault": "#D0D0D0"
   },
-  "strokePx": 3,
+  "strokePx": 2,
   "size": 24,
+  "twoColorDefault": true,
   "icons": {
     "build-pipeline": "Build a pipeline",
     "add-point": "Add a point to the pipeline",
