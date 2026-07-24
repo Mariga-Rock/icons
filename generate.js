@@ -20,7 +20,8 @@ const OUT = {
 };
 
 const s = (c) =>
-  `stroke="${c}" stroke-width="${STROKE}" stroke-linecap="round" stroke-linejoin="round" fill="none"`;
+  `stroke="${c}" stroke-width="${STROKE}" stroke-linecap="round" stroke-linejoin="round"`;
+const none = `fill="none"`;
 const f = (c) => `fill="${c}"`;
 
 /** 3×3 grip square centered on (cx, cy) */
@@ -34,7 +35,7 @@ const icons = {
   'build-pipeline': {
     label: 'Build a pipeline',
     draw: (c) => `
-  <path d="M3.5 18.5 L8.5 10.5 L14.5 14.5 L20.5 5.5" ${s(c)}/>
+  <path d="M3.5 18.5 L8.5 10.5 L14.5 14.5 L20.5 5.5" ${s(c)} ${none}/>
   ${grip(3.5, 18.5, c)}
   ${grip(8.5, 10.5, c)}
   ${grip(14.5, 14.5, c)}
@@ -44,20 +45,18 @@ const icons = {
   'add-point': {
     label: 'Add a point to the pipeline',
     draw: (c) => `
-  <path d="M3.5 18.5 L10.5 8.5 L20.5 8.5" ${s(c)}/>
+  <path d="M3.5 18.5 L10.5 8.5 L20.5 8.5" ${s(c)} ${none}/>
   ${grip(3.5, 18.5, c)}
   ${grip(20.5, 8.5, c)}
-  <!-- new vertex (filled grip, distinct) -->
   ${grip(10.5, 8.5, c)}
-  <!-- plus -->
-  <path d="M16.5 14.5 V20.5 M13.5 17.5 H19.5" ${s(c)}/>`,
+  <path d="M16.5 14.5 V20.5 M13.5 17.5 H19.5" ${s(c)} ${none}/>`,
   },
 
   'import-pipeline': {
     label: 'Import a pipeline',
     draw: (c) => `
-  <path d="M12 2.5 V10.5 M8.5 7 L12 10.5 L15.5 7" ${s(c)}/>
-  <path d="M3.5 14.5 L9 20 L14.5 15.5 L20.5 20" ${s(c)}/>
+  <path d="M12 2.5 V10.5 M8.5 7 L12 10.5 L15.5 7" ${s(c)} ${none}/>
+  <path d="M3.5 14.5 L9 20 L14.5 15.5 L20.5 20" ${s(c)} ${none}/>
   ${grip(3.5, 14.5, c)}
   ${grip(20.5, 20, c)}`,
   },
@@ -65,17 +64,17 @@ const icons = {
   'add-layer': {
     label: 'Add a layer to pipeline',
     draw: (c) => `
-  <path d="M2.5 19 L9 14.5 L15 17.5 L21.5 12.5" ${s(c)}/>
-  <path d="M2.5 10.5 L9 6 L15 9 L18 6.5" ${s(c)}/>
-  <path d="M18.5 15 V21 M15.5 18 H21.5" ${s(c)}/>`,
+  <path d="M2.5 19 L9 14.5 L15 17.5 L21.5 12.5" ${s(c)} ${none}/>
+  <path d="M2.5 10.5 L9 6 L15 9 L18 6.5" ${s(c)} ${none}/>
+  <path d="M18.5 15 V21 M15.5 18 H21.5" ${s(c)} ${none}/>`,
   },
 
   'paste-pipeline': {
     label: 'Paste a pipeline',
     draw: (c) => `
-  <rect x="5.5" y="6.5" width="13" height="14.5" rx="1.5" ${s(c)}/>
+  <rect x="5.5" y="6.5" width="13" height="14.5" rx="1.5" ${s(c)} ${none}/>
   <rect x="9" y="3.5" width="6" height="4" rx="1" ${s(c)} ${f(c)}/>
-  <path d="M8.5 16 L11.5 11.5 L13.5 14 L16 10.5" ${s(c)}/>`,
+  <path d="M8.5 16 L11.5 11.5 L13.5 14 L16 10.5" ${s(c)} ${none}/>`,
   },
 };
 
@@ -104,6 +103,9 @@ const themes = [
 ];
 
 async function main() {
+  // drop any legacy paths
+  fs.rmSync(path.join(OUT.svg, 'base'), { recursive: true, force: true });
+
   let Resvg = null;
   try {
     ({ Resvg } = require('@resvg/resvg-js'));
