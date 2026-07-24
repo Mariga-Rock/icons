@@ -1,0 +1,12 @@
+{
+  "name": "pipeline-icons",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AutoCAD-style pipeline UI icons (24×24, 3px stroke)",
+  "scripts": {
+    "build": "node generate.js"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2"
+  }
+}

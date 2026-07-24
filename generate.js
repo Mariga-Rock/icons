@@ -1,0 +1,209 @@
+#!/usr/bin/env node
+/**
+ * Pipeline UI icons — AutoCAD-style 24×24, 3px stroke.
+ * Generates SVG (currentColor + themed) and PNG via @resvg/resvg-js.
+ */
+const fs = require('fs');
+const path = require('path');
+
+const SIZE = 24;
+const STROKE = 3;
+const PRIMARY = '#484848';
+const SECONDARY = '#B656FF';
+/** Neutral light gray for dark-mode default (primary is too dark on dark UI). */
+const DARK_DEFAULT = '#D0D0D0';
+
+const ROOT = __dirname;
+const OUT = {
+  svg: path.join(ROOT, 'svg'),
+  png: path.join(ROOT, 'png'),
+};
+
+const s = (c) =>
+  `stroke="${c}" stroke-width="${STROKE}" stroke-linecap="round" stroke-linejoin="round" fill="none"`;
+const f = (c) => `fill="${c}"`;
+
+/** 3×3 grip square centered on (cx, cy) */
+const grip = (cx, cy, c) =>
+  `<rect x="${cx - 1.5}" y="${cy - 1.5}" width="3" height="3" rx="0.5" ${f(c)}/>`;
+
+/**
+ * Single-concept CAD metaphors. Geometry kept sparse for 3px weight.
+ */
+const icons = {
+  'build-pipeline': {
+    label: 'Build a pipeline',
+    draw: (c) => `
+  <path d="M3.5 18.5 L8.5 10.5 L14.5 14.5 L20.5 5.5" ${s(c)}/>
+  ${grip(3.5, 18.5, c)}
+  ${grip(8.5, 10.5, c)}
+  ${grip(14.5, 14.5, c)}
+  ${grip(20.5, 5.5, c)}`,
+  },
+
+  'add-point': {
+    label: 'Add a point to the pipeline',
+    draw: (c) => `
+  <path d="M3.5 18.5 L10.5 8.5 L20.5 8.5" ${s(c)}/>
+  ${grip(3.5, 18.5, c)}
+  ${grip(20.5, 8.5, c)}
+  <!-- new vertex (filled grip, distinct) -->
+  ${grip(10.5, 8.5, c)}
+  <!-- plus -->
+  <path d="M16.5 14.5 V20.5 M13.5 17.5 H19.5" ${s(c)}/>`,
+  },
+
+  'import-pipeline': {
+    label: 'Import a pipeline',
+    draw: (c) => `
+  <path d="M12 2.5 V10.5 M8.5 7 L12 10.5 L15.5 7" ${s(c)}/>
+  <path d="M3.5 14.5 L9 20 L14.5 15.5 L20.5 20" ${s(c)}/>
+  ${grip(3.5, 14.5, c)}
+  ${grip(20.5, 20, c)}`,
+  },
+
+  'add-layer': {
+    label: 'Add a layer to pipeline',
+    draw: (c) => `
+  <path d="M2.5 19 L9 14.5 L15 17.5 L21.5 12.5" ${s(c)}/>
+  <path d="M2.5 10.5 L9 6 L15 9 L18 6.5" ${s(c)}/>
+  <path d="M18.5 15 V21 M15.5 18 H21.5" ${s(c)}/>`,
+  },
+
+  'paste-pipeline': {
+    label: 'Paste a pipeline',
+    draw: (c) => `
+  <!-- clipboard outline (closed path) -->
+  <path d="M8 5.5 H9.5 V4.5 C9.5 3.7 10.2 3 11 3 H13 C13.8 3 14.5 3.7 14.5 4.5 V5.5 H16 C17.1 5.5 18 6.4 18 7.5 V19 C18 20.1 17.1 21 16 21 H8 C6.9 21 6 20.1 6 19 V7.5 C6 6.4 6.9 5.5 8 5.5 Z" ${s(c)}/>
+  <path d="M8.5 14.5 L11.5 10.5 L14 13 L16.5 9.5" ${s(c)}/>
+  ${grip(11.5, 10.5, c)}
+  ${grip(16.5, 9.5, c)}`,
+  },
+};
+
+function wrap(inner) {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}" viewBox="0 0 ${SIZE} ${SIZE}" fill="none" aria-hidden="true">
+${inner}
+</svg>
+`;
+}
+
+function ensureDir(d) {
+  fs.mkdirSync(d, { recursive: true });
+}
+
+function write(file, data) {
+  ensureDir(path.dirname(file));
+  fs.writeFileSync(file, data);
+}
+
+const themes = [
+  { mode: 'light', state: 'default', color: PRIMARY },
+  { mode: 'light', state: 'active', color: SECONDARY },
+  { mode: 'dark', state: 'default', color: DARK_DEFAULT },
+  { mode: 'dark', state: 'active', color: SECONDARY },
+];
+
+async function main() {
+  let Resvg = null;
+  try {
+    ({ Resvg } = require('@resvg/resvg-js'));
+  } catch {
+    console.warn('PNG skipped — install @resvg/resvg-js');
+  }
+
+  const files = [];
+
+  for (const [name, icon] of Object.entries(icons)) {
+    const baseSvg = wrap(icon.draw('currentColor'));
+    write(path.join(OUT.svg, 'currentColor', `${name}.svg`), baseSvg);
+    files.push(`svg/currentColor/${name}.svg`);
+
+    for (const t of themes) {
+      const svg = wrap(icon.draw(t.color));
+      const svgRel = `${t.mode}/${t.state}/${name}.svg`;
+      write(path.join(OUT.svg, svgRel), svg);
+      files.push(`svg/${svgRel}`);
+
+      if (Resvg) {
+        for (const px of [SIZE, SIZE * 2]) {
+          const png = new Resvg(svg, {
+            fitTo: { mode: 'width', value: px },
+            background: 'rgba(0,0,0,0)',
+          })
+            .render()
+            .asPng();
+          const suffix = px === SIZE ? '' : `@${px / SIZE}x`;
+          const pngRel = `${t.mode}/${t.state}/${name}${suffix}.png`;
+          write(path.join(OUT.png, pngRel), png);
+          files.push(`png/${pngRel}`);
+        }
+      }
+    }
+  }
+
+  const readme = `# Pipeline icons
+
+AutoCAD-style line-art UI icons for pipeline operations.
+
+| Spec | Value |
+|------|-------|
+| Grid | 24×24 |
+| Stroke | 3px, round caps & joins |
+| Background | Transparent |
+| Primary (light default) | \`${PRIMARY}\` |
+| Secondary (active) | \`${SECONDARY}\` |
+| Dark default | \`${DARK_DEFAULT}\` |
+
+## Icons
+
+| Name | Meaning |
+|------|---------|
+| \`build-pipeline\` | Build a pipeline |
+| \`add-point\` | Add a point to the pipeline |
+| \`import-pipeline\` | Import a pipeline |
+| \`add-layer\` | Add a layer to pipeline |
+| \`paste-pipeline\` | Paste a pipeline |
+
+## Layout
+
+\`\`\`
+svg/currentColor/{name}.svg          # inherits currentColor
+svg/{light|dark}/{default|active}/   # themed SVG
+png/{light|dark}/{default|active}/   # 24px + @2x PNG
+\`\`\`
+
+## Regenerate
+
+\`\`\`bash
+npm install
+node generate.js
+\`\`\`
+`;
+
+  write(path.join(ROOT, 'README.md'), readme);
+  write(
+    path.join(ROOT, 'manifest.json'),
+    JSON.stringify(
+      {
+        palette: { primary: PRIMARY, secondary: SECONDARY, darkDefault: DARK_DEFAULT },
+        strokePx: STROKE,
+        size: SIZE,
+        icons: Object.fromEntries(
+          Object.entries(icons).map(([k, v]) => [k, v.label]),
+        ),
+        files,
+      },
+      null,
+      2,
+    ),
+  );
+
+  console.log(`Generated ${files.length} files`);
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
