@@ -15,8 +15,9 @@ Lite Comsol Multiphysics–inspired line-art UI icons (24×24, 2px).
 **Visual language**
 - **Pipeline** — angular polyline + square grips
 - **Special line** — soft curve + circular nodes
-- **Add element** — diamond tile accent (not mesh triangle)
-- **Add layer** — 3-bar layer stack accent (not double zigzag)
+- **Add element** — matching continuation segment in accent (same visual language)
+- **Add layer** — 3-bar layer stack accent
+- **Paste** — light open clipboard + sparse inner path
 
 ## Icons (10)
 

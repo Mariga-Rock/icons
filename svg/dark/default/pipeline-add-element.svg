@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
 
-  <path d="M3 18 L8 10 L14 14 L21 5" stroke="#D0D0D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <rect x="1.75" y="16.75" width="2.5" height="2.5" rx="0.35" fill="#D0D0D0"/>
-  <rect x="19.75" y="3.75" width="2.5" height="2.5" rx="0.35" fill="#D0D0D0"/>
-  <path d="M12 13.3 L15.2 16.5 L12 19.7 L8.8 16.5 Z" stroke="#B656FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- existing pipeline -->
+  <path d="M3 17 L8 9 L13 13" stroke="#D0D0D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <rect x="1.75" y="15.75" width="2.5" height="2.5" rx="0.35" fill="#D0D0D0"/>
+  <rect x="11.75" y="11.75" width="2.5" height="2.5" rx="0.35" fill="#D0D0D0"/>
+  <!-- similar part being added (same angular language) -->
+  <path d="M13 13 L18 8 L21 11" stroke="#B656FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <rect x="16.75" y="6.75" width="2.5" height="2.5" rx="0.35" fill="#B656FF"/>
+  <rect x="19.75" y="9.75" width="2.5" height="2.5" rx="0.35" fill="#B656FF"/>
 </svg>

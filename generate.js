@@ -42,10 +42,6 @@ const specialLine = (c) =>
 const pipeline = (c) =>
   `<path d="M3 18 L8 10 L14 14 L21 5" ${s(c)} ${none}/>`;
 
-/** NEW add-element mark: small diamond tile (not FEA triangle) */
-const elementDiamond = (cx, cy, c) =>
-  `<path d="M${cx} ${cy - 3.2} L${cx + 3.2} ${cy} L${cx} ${cy + 3.2} L${cx - 3.2} ${cy} Z" ${s(c)} ${none}/>`;
-
 /** NEW add-layer mark: compact layer stack (3 bars), not double zigzag */
 const layerStack = (x, y, c) => `
   <path d="M${x} ${y} H${x + 6}" ${s(c)} ${none}/>
@@ -62,19 +58,26 @@ const icons = {
   'pipeline-add-element': {
     label: 'Add an element to a pipeline',
     draw: ({ primary, accent }) => `
-  ${pipeline(primary)}
-  ${grip(3, 18, primary)}
-  ${grip(21, 5, primary)}
-  ${elementDiamond(12, 16.5, accent)}`,
+  <!-- existing pipeline -->
+  <path d="M3 17 L8 9 L13 13" ${s(primary)} ${none}/>
+  ${grip(3, 17, primary)}
+  ${grip(13, 13, primary)}
+  <!-- similar part being added (same angular language) -->
+  <path d="M13 13 L18 8 L21 11" ${s(accent)} ${none}/>
+  ${grip(18, 8, accent)}
+  ${grip(21, 11, accent)}`,
   },
 
   'special-line-add-element': {
     label: 'Add an element to a special line',
     draw: ({ primary, accent }) => `
-  ${specialLine(primary)}
-  ${node(3, 18, primary)}
-  ${node(21, 6, primary)}
-  ${elementDiamond(12, 16.5, accent)}`,
+  <!-- existing special line -->
+  <path d="M3 17 C7 17 8 8 12 9" ${s(primary)} ${none}/>
+  ${node(3, 17, primary)}
+  ${node(12, 9, primary)}
+  <!-- similar curve segment being added -->
+  <path d="M12 9 C15 10 17 16 21 7" ${s(accent)} ${none}/>
+  ${node(21, 7, accent)}`,
   },
 
   'pipeline-add-point': {
@@ -136,21 +139,18 @@ const icons = {
   'pipeline-paste': {
     label: 'Paste a pipeline from clipboard',
     draw: ({ primary, accent }) => `
-  <rect x="5.5" y="6.5" width="13" height="14.5" rx="1.5" ${s(primary)} ${none}/>
-  <rect x="9" y="3.5" width="6" height="4" rx="1" ${s(primary)} ${f(primary)}/>
-  <path d="M8.5 16 L11.5 11 L14 14 L16.5 9.5" ${s(accent)} ${none}/>
-  ${grip(11.5, 11, accent)}
-  ${grip(16.5, 9.5, accent)}`,
+  <!-- light clipboard: open clip, no fill, airy frame -->
+  <rect x="6.5" y="7" width="11" height="13" rx="1.25" ${s(primary)} ${none}/>
+  <path d="M9.5 7 V5 H14.5 V7" ${s(primary)} ${none}/>
+  <path d="M9 15 L11.5 11.5 L13.5 13.5 L15.5 10.5" ${s(accent)} ${none}/>`,
   },
 
   'special-line-paste': {
     label: 'Paste a special line from clipboard',
     draw: ({ primary, accent }) => `
-  <rect x="5.5" y="6.5" width="13" height="14.5" rx="1.5" ${s(primary)} ${none}/>
-  <rect x="9" y="3.5" width="6" height="4" rx="1" ${s(primary)} ${f(primary)}/>
-  <path d="M8.5 16 C10.5 16 11 11 13 11 C15 11 15.5 15 16.5 10" ${s(accent)} ${none}/>
-  ${node(13, 11, accent)}
-  ${node(16.5, 10, accent)}`,
+  <rect x="6.5" y="7" width="11" height="13" rx="1.25" ${s(primary)} ${none}/>
+  <path d="M9.5 7 V5 H14.5 V7" ${s(primary)} ${none}/>
+  <path d="M9 15 C10.5 15 11.5 11.5 13 11.5 C14.5 11.5 15 14 16 11" ${s(accent)} ${none}/>`,
   },
 };
 
@@ -259,8 +259,9 @@ Lite Comsol Multiphysics–inspired line-art UI icons (24×24, 2px).
 **Visual language**
 - **Pipeline** — angular polyline + square grips
 - **Special line** — soft curve + circular nodes
-- **Add element** — diamond tile accent (not mesh triangle)
-- **Add layer** — 3-bar layer stack accent (not double zigzag)
+- **Add element** — matching continuation segment in accent (same visual language)
+- **Add layer** — 3-bar layer stack accent
+- **Paste** — light open clipboard + sparse inner path
 
 ## Icons (10)
 
