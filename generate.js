@@ -139,18 +139,18 @@ const icons = {
   'pipeline-paste': {
     label: 'Paste a pipeline from clipboard',
     draw: ({ primary, accent }) => `
-  <!-- light clipboard: open clip, no fill, airy frame -->
-  <rect x="6.5" y="7" width="11" height="13" rx="1.25" ${s(primary)} ${none}/>
-  <path d="M9.5 7 V5 H14.5 V7" ${s(primary)} ${none}/>
-  <path d="M9 15 L11.5 11.5 L13.5 13.5 L15.5 10.5" ${s(accent)} ${none}/>`,
+  <!-- open clipboard: sides + top only, no bottom -->
+  <path d="M7 19.5 V8 H17 V19.5" ${s(primary)} ${none}/>
+  <path d="M9.5 8 V5.5 H14.5 V8" ${s(primary)} ${none}/>
+  <path d="M9.5 14.5 L12 11 L13.5 12.5 L15.5 10" ${s(accent)} ${none}/>`,
   },
 
   'special-line-paste': {
     label: 'Paste a special line from clipboard',
     draw: ({ primary, accent }) => `
-  <rect x="6.5" y="7" width="11" height="13" rx="1.25" ${s(primary)} ${none}/>
-  <path d="M9.5 7 V5 H14.5 V7" ${s(primary)} ${none}/>
-  <path d="M9 15 C10.5 15 11.5 11.5 13 11.5 C14.5 11.5 15 14 16 11" ${s(accent)} ${none}/>`,
+  <path d="M7 19.5 V8 H17 V19.5" ${s(primary)} ${none}/>
+  <path d="M9.5 8 V5.5 H14.5 V8" ${s(primary)} ${none}/>
+  <path d="M9.5 14.5 C11 14.5 11.5 11 13 11 C14.5 11 14.5 13.5 15.5 10.5" ${s(accent)} ${none}/>`,
   },
 };
 
