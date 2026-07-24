@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+
+  <!-- special line -->
+  <path d="M2.5 16.5 L8 8 L21 8" stroke="#484848" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <circle cx="2.5" cy="16.5" r="1.75" fill="#484848"/>
+  <circle cx="21" cy="8" r="1.75" fill="#484848"/>
+  <!-- mesh element (triangle) attached at mid-node -->
+  <path d="M8 8 L12.5 17 L17 8" stroke="#484848" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <circle cx="8" cy="8" r="1.75" fill="#484848"/>
+  <circle cx="12.5" cy="17" r="1.75" fill="#484848"/>
+  <circle cx="17" cy="8" r="1.75" fill="#484848"/>
+</svg>

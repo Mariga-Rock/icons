@@ -1,18 +1,15 @@
 #!/usr/bin/env node
 /**
- * Pipeline UI icons — AutoCAD-style 24×24, 2px stroke, two-color defaults.
- * Default: primary gray + obligatory #B656FF accent.
- * Active: full #B656FF.
+ * Special-line UI icons — Comsol Multiphysics–style 24×24, 3px stroke.
  * Generates SVG (currentColor + themed) and PNG via @resvg/resvg-js.
  */
 const fs = require('fs');
 const path = require('path');
 
 const SIZE = 24;
-const STROKE = 2;
+const STROKE = 3;
 const PRIMARY = '#484848';
 const SECONDARY = '#B656FF';
-/** Readable neutral for dark-mode default body strokes. */
 const DARK_DEFAULT = '#D0D0D0';
 
 const ROOT = __dirname;
@@ -26,63 +23,65 @@ const s = (c) =>
 const none = `fill="none"`;
 const f = (c) => `fill="${c}"`;
 
-/** Filled grip square (AutoCAD-style) centered on (cx, cy) */
-const grip = (cx, cy, c, size = 2.5) => {
-  const h = size / 2;
-  return `<rect x="${cx - h}" y="${cy - h}" width="${size}" height="${size}" rx="0.4" ${f(c)}/>`;
-};
+/** Comsol-like circular geometry node */
+const node = (cx, cy, c, r = 1.75) =>
+  `<circle cx="${cx}" cy="${cy}" r="${r}" ${f(c)}/>`;
 
 /**
- * Two-color CAD metaphors.
- * @param {{ primary: string, accent: string }} colors
- *   primary = body / structure, accent = #B656FF action cue (always required in default)
+ * Single-concept metaphors inspired by Comsol geometry / mesh UI.
+ * draw(color) — monochrome themed or currentColor.
  */
 const icons = {
-  'build-pipeline': {
-    label: 'Build a pipeline',
-    draw: ({ primary, accent }) => `
-  <path d="M3.5 18.5 L8.5 10.5 L14.5 14.5 L20.5 5.5" ${s(primary)} ${none}/>
-  ${grip(3.5, 18.5, accent)}
-  ${grip(8.5, 10.5, accent)}
-  ${grip(14.5, 14.5, accent)}
-  ${grip(20.5, 5.5, accent)}`,
+  'add-element': {
+    label: 'Add an element to a special line',
+    draw: (c) => `
+  <!-- special line -->
+  <path d="M2.5 16.5 L8 8 L21 8" ${s(c)} ${none}/>
+  ${node(2.5, 16.5, c)}
+  ${node(21, 8, c)}
+  <!-- mesh element (triangle) attached at mid-node -->
+  <path d="M8 8 L12.5 17 L17 8" ${s(c)} ${none}/>
+  ${node(8, 8, c)}
+  ${node(12.5, 17, c)}
+  ${node(17, 8, c)}`,
   },
 
   'add-point': {
-    label: 'Add a point to the pipeline',
-    draw: ({ primary, accent }) => `
-  <path d="M3.5 18.5 L10.5 8.5 L20.5 8.5" ${s(primary)} ${none}/>
-  ${grip(3.5, 18.5, primary)}
-  ${grip(20.5, 8.5, primary)}
-  ${grip(10.5, 8.5, accent, 3)}
-  <path d="M16.5 14.5 V20.5 M13.5 17.5 H19.5" ${s(accent)} ${none}/>`,
+    label: 'Add a point to that special line',
+    draw: (c) => `
+  <path d="M3 18 L9 9 L21 9" ${s(c)} ${none}/>
+  ${node(3, 18, c)}
+  ${node(21, 9, c)}
+  <!-- new point (hollow ring = selection) -->
+  <circle cx="9" cy="9" r="2.75" ${s(c)} ${none}/>
+  <path d="M16.5 14.5 V20.5 M13.5 17.5 H19.5" ${s(c)} ${none}/>`,
   },
 
-  'import-pipeline': {
-    label: 'Import a pipeline',
-    draw: ({ primary, accent }) => `
-  <path d="M12 2.5 V10.5 M8.5 7 L12 10.5 L15.5 7" ${s(accent)} ${none}/>
-  <path d="M3.5 14.5 L9 20 L14.5 15.5 L20.5 20" ${s(primary)} ${none}/>
-  ${grip(3.5, 14.5, accent)}
-  ${grip(20.5, 20, accent)}`,
+  'import-special-line': {
+    label: 'Import a special line',
+    draw: (c) => `
+  <path d="M12 2.5 V11 M8.5 7.5 L12 11 L15.5 7.5" ${s(c)} ${none}/>
+  <path d="M3 15 L8 20 L14 15.5 L21 19.5" ${s(c)} ${none}/>
+  ${node(3, 15, c)}
+  ${node(21, 19.5, c)}`,
   },
 
   'add-layer': {
-    label: 'Add a layer to pipeline',
-    draw: ({ primary, accent }) => `
-  <path d="M2.5 19 L9 14.5 L15 17.5 L21.5 12.5" ${s(primary)} ${none}/>
-  <path d="M2.5 10.5 L9 6 L15 9 L18 6.5" ${s(accent)} ${none}/>
-  <path d="M18.5 15 V21 M15.5 18 H21.5" ${s(accent)} ${none}/>`,
+    label: 'Add a cool layer to the special line',
+    draw: (c) => `
+  <path d="M2.5 19 L9 14.5 L15 17.5 L21.5 13" ${s(c)} ${none}/>
+  <path d="M2.5 11 L9 6.5 L15 9.5 L18.5 6.5" ${s(c)} ${none}/>
+  <path d="M18.5 15 V21 M15.5 18 H21.5" ${s(c)} ${none}/>`,
   },
 
-  'paste-pipeline': {
-    label: 'Paste a pipeline',
-    draw: ({ primary, accent }) => `
-  <rect x="5.5" y="6.5" width="13" height="14.5" rx="1.5" ${s(primary)} ${none}/>
-  <rect x="9" y="3.5" width="6" height="4" rx="1" ${s(primary)} ${f(primary)}/>
-  <path d="M8.5 16 L11.5 11.5 L13.5 14 L16 10.5" ${s(accent)} ${none}/>
-  ${grip(11.5, 11.5, accent)}
-  ${grip(16, 10.5, accent)}`,
+  'paste-special-line': {
+    label: 'Paste a special line from clipboard',
+    draw: (c) => `
+  <rect x="5.5" y="6.5" width="13" height="14.5" rx="1.5" ${s(c)} ${none}/>
+  <rect x="9" y="3.5" width="6" height="4" rx="1" ${s(c)} ${f(c)}/>
+  <path d="M8.5 16 L11.5 11 L14 14 L16.5 10" ${s(c)} ${none}/>
+  ${node(11.5, 11, c)}
+  ${node(16.5, 10, c)}`,
   },
 };
 
@@ -103,15 +102,11 @@ function write(file, data) {
   fs.writeFileSync(file, data);
 }
 
-/**
- * default → two-color (body + obligatory #B656FF accent)
- * active  → both channels #B656FF
- */
 const themes = [
-  { mode: 'light', state: 'default', primary: PRIMARY, accent: SECONDARY },
-  { mode: 'light', state: 'active', primary: SECONDARY, accent: SECONDARY },
-  { mode: 'dark', state: 'default', primary: DARK_DEFAULT, accent: SECONDARY },
-  { mode: 'dark', state: 'active', primary: SECONDARY, accent: SECONDARY },
+  { mode: 'light', state: 'default', color: PRIMARY },
+  { mode: 'light', state: 'active', color: SECONDARY },
+  { mode: 'dark', state: 'default', color: DARK_DEFAULT },
+  { mode: 'dark', state: 'active', color: SECONDARY },
 ];
 
 async function main() {
@@ -127,15 +122,12 @@ async function main() {
   const files = [];
 
   for (const [name, icon] of Object.entries(icons)) {
-    // currentColor body + fixed accent (keeps obligatory purple when tinted via CSS)
-    const baseSvg = wrap(
-      icon.draw({ primary: 'currentColor', accent: SECONDARY }),
-    );
+    const baseSvg = wrap(icon.draw('currentColor'));
     write(path.join(OUT.svg, 'currentColor', `${name}.svg`), baseSvg);
     files.push(`svg/currentColor/${name}.svg`);
 
     for (const t of themes) {
-      const svg = wrap(icon.draw({ primary: t.primary, accent: t.accent }));
+      const svg = wrap(icon.draw(t.color));
       const svgRel = `${t.mode}/${t.state}/${name}.svg`;
       write(path.join(OUT.svg, svgRel), svg);
       files.push(`svg/${svgRel}`);
@@ -157,36 +149,47 @@ async function main() {
     }
   }
 
-  const readme = `# Pipeline icons
+  // Remove obsolete pipeline icon filenames from prior generations
+  const keep = new Set(Object.keys(icons));
+  for (const root of [OUT.svg, OUT.png]) {
+    if (!fs.existsSync(root)) continue;
+    for (const dir of walkDirs(root)) {
+      for (const file of fs.readdirSync(dir)) {
+        const base = file.replace(/(@2x)?\.(svg|png)$/, '');
+        if (base && !keep.has(base) && /\.(svg|png)$/.test(file)) {
+          fs.unlinkSync(path.join(dir, file));
+        }
+      }
+    }
+  }
 
-AutoCAD-style two-color line-art UI icons for pipeline operations.
+  const readme = `# Special-line icons
+
+Comsol Multiphysics–style line-art UI icons for special-line operations.
 
 | Spec | Value |
 |------|-------|
 | Grid | 24×24 |
-| Stroke | 2px, round caps & joins |
+| Stroke | 3px, round caps & joins |
 | Background | Transparent |
-| Primary (light default body) | \`${PRIMARY}\` |
-| Accent (obligatory in default) | \`${SECONDARY}\` |
-| Dark default body | \`${DARK_DEFAULT}\` |
-| Active | full \`${SECONDARY}\` |
-
-Default states are **two-colored**: structure in primary/gray, action cues in \`${SECONDARY}\`.
+| Primary (light default) | \`${PRIMARY}\` |
+| Secondary (active) | \`${SECONDARY}\` |
+| Dark default | \`${DARK_DEFAULT}\` |
 
 ## Icons
 
-| Name | Meaning | Accent cue |
-|------|---------|------------|
-| \`build-pipeline\` | Build a pipeline | Grip nodes |
-| \`add-point\` | Add a point to the pipeline | New vertex + plus |
-| \`import-pipeline\` | Import a pipeline | Import arrow + end grips |
-| \`add-layer\` | Add a layer to pipeline | Upper layer + plus |
-| \`paste-pipeline\` | Paste a pipeline | Pipeline on clipboard |
+| Name | Meaning |
+|------|---------|
+| \`add-element\` | Add an element to a special line |
+| \`add-point\` | Add a point to that special line |
+| \`import-special-line\` | Import a special line |
+| \`add-layer\` | Add a cool layer to the special line |
+| \`paste-special-line\` | Paste a special line from clipboard |
 
 ## Layout
 
 \`\`\`
-svg/currentColor/{name}.svg          # currentColor body + #B656FF accent
+svg/currentColor/{name}.svg          # inherits currentColor
 svg/{light|dark}/{default|active}/   # themed SVG
 png/{light|dark}/{default|active}/   # 24px + @2x PNG
 \`\`\`
@@ -211,7 +214,7 @@ node generate.js
         },
         strokePx: STROKE,
         size: SIZE,
-        twoColorDefault: true,
+        style: 'Comsol Multiphysics',
         icons: Object.fromEntries(
           Object.entries(icons).map(([k, v]) => [k, v.label]),
         ),
@@ -223,6 +226,14 @@ node generate.js
   );
 
   console.log(`Generated ${files.length} files`);
+}
+
+function walkDirs(dir) {
+  const out = [dir];
+  for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (ent.isDirectory()) out.push(...walkDirs(path.join(dir, ent.name)));
+  }
+  return out;
 }
 
 main().catch((e) => {
